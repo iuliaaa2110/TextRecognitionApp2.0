@@ -51,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                dispatchTakePictureIntent();
+            }
+        });
+
+        detectTextBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                detectTextFromImage();
             }
         });
     }
@@ -75,5 +83,9 @@ public class MainActivity extends AppCompatActivity {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
         }
+    }
+
+    private void detectTextFromImage(){
+
     }
 }

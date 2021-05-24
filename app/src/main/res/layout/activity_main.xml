@@ -1,59 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
         android:id="@+id/text_display"
-        android:layout_width="339dp"
-        android:layout_height="96dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_below="@+id/image_view"
         android:layout_margin="10dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="244dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="209dp"
         android:maxLines="5"
         android:text="Display Detected Text from image"
         android:textSize="26dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="36dp"
-        tools:layout_editor_absoluteY="244dp" />
+        app:layout_constraintBottom_toTopOf="@+id/capture_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:ignore="MissingConstraints" />
 
 
     <Button
         android:id="@+id/capture_image"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/detect_text_image"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="21dp"
         android:background="@android:color/holo_orange_light"
         android:text="Capture Image"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="17dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="549dp" />
+        app:layout_constraintBottom_toTopOf="@+id/detect_text_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_display"
+        tools:ignore="MissingConstraints" />
 
 
     <Button
         android:id="@+id/detect_text_image"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="65dp"
         android:background="@android:color/holo_blue_dark"
         android:text="Detect Text"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="17dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="618dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/capture_image"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

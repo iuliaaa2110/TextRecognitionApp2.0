@@ -213,26 +213,31 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void detectTextFromImage(){
-        FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
-//        treb sa inlocuiesc cu asta:
-//        public static FirebaseVisionImage fromFilePath (Context context, Uri imageUri)
+        if(imageBitmap == null)
+        {
+            Toast.makeText(this, "You need to take a photo first.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
+            //        treb sa inlocuiesc cu asta:
+            //        public static FirebaseVisionImage fromFilePath (Context context, Uri imageUri)
 
-        FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
+            FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
 
-        firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-            @Override
-            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                displayTextFromImage(firebaseVisionText);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                @Override
+                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                    displayTextFromImage(firebaseVisionText);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
-                Log.d("Error: ", e.getMessage());
-            }
-        });
-
+                    Log.d("Error: ", e.getMessage());
+                }
+            });
+        }
 
     }
 

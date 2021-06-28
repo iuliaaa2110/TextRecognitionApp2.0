@@ -5,19 +5,14 @@ package com.example.textrecognitionapp20;
 //import androidx.camera.core.ImageAnalysis;
 //import androidx.camera.core.ImageProxy;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+//import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +22,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
@@ -59,12 +53,13 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView textView;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    //    TextRecognizer recognizer = TextRecognition.getClient();
-//    InputImage image;
     Bitmap imageBitmap;
     String currentPhotoPath;
+    String text;
 
     private File createImageFile() throws IOException {
+        // https://stackoverflow.com/questions/51115991/action-image-capture-returns-poor-image-quality-bitmap-where-can-i-get-the-hi-r
+        // https://developer.android.com/training/camera/photobasics
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -103,14 +98,50 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
 
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//        try {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//        } catch (ActivityNotFoundException e) {
-//            // display error state to the user
-//        }
+    private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
+        List<FirebaseVisionText.Block> blockList = firebaseVisionText.getBlocks();
+        if (blockList.size() == 0){
+            Toast.makeText(this, "The text isn't clear. Try again.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            text = "";
+            for (FirebaseVisionText.Block block : firebaseVisionText.getBlocks()){
+                text = text.concat(block.getText());
+            }
+            textView.setText(text);
+            Log.d("De debug", text);
+        }
+    }
+
+    private void detectTextFromImage(){
+        if(imageBitmap == null)
+        {
+            Toast.makeText(this, "You need to take a photo first.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
+            //        treb sa inlocuiesc cu asta:
+            //        public static FirebaseVisionImage fromFilePath (Context context, Uri imageUri)
+
+            FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
+
+            firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                @Override
+                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                    displayTextFromImage(firebaseVisionText);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    Log.d("Error: ", e.getMessage());
+                }
+            });
+        }
+
     }
 
     @Override
@@ -138,25 +169,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-//    protected Bitmap resizeImageBitmap(Bitmap myBitmap){
-//        final int maxSize = 960;
-//        int outWidth;
-//        int outHeight;
-//        int inWidth = myBitmap.getWidth();
-//        int inHeight = myBitmap.getHeight();
-//        if(inWidth > inHeight){
-//            outWidth = maxSize;
-//            outHeight = (inHeight * maxSize) / inWidth;
-//        } else {
-//            outHeight = maxSize;
-//            outWidth = (inWidth * maxSize) / inHeight;
-//        }
-//
-//        Bitmap resizedBitmap = Bitmap.createScaledBitmap(myBitmap, outWidth, outHeight, false);
-//        return resizedBitmap;
-//    }
-
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -196,63 +208,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-////            imageBitmap = resizeImageBitmap((Bitmap) extras.get("data"));
-//            imageBitmap = (Bitmap) extras.get("data");
-////            Drawable d = new BitmapDrawable(getResources(), imageBitmap);
-////            imageView.setImageDrawable(d);
-//            imageView.setImageBitmap(imageBitmap);
-//            Uri image = data.getData();
             galleryAddPic();
             setPic();
-            // ia vezi:
-            // https://stackoverflow.com/questions/51115991/action-image-capture-returns-poor-image-quality-bitmap-where-can-i-get-the-hi-r
-//            https://developer.android.com/training/camera/photobasics
         }
     }
 
-
-    private void detectTextFromImage(){
-        if(imageBitmap == null)
-        {
-            Toast.makeText(this, "You need to take a photo first.", Toast.LENGTH_LONG).show();
-        }
-        else {
-            FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
-            //        treb sa inlocuiesc cu asta:
-            //        public static FirebaseVisionImage fromFilePath (Context context, Uri imageUri)
-
-            FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
-
-            firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-                @Override
-                public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                    displayTextFromImage(firebaseVisionText);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    Log.d("Error: ", e.getMessage());
-                }
-            });
-        }
-
-    }
-
-    private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
-        List<FirebaseVisionText.Block> blockList = firebaseVisionText.getBlocks();
-        if (blockList.size() == 0){
-            Toast.makeText(this, "The text isn't clear. Try again.", Toast.LENGTH_LONG).show();
-        }
-        else {
-            String text = "";
-            for (FirebaseVisionText.Block block : firebaseVisionText.getBlocks()){
-                text = text.concat(block.getText());
-            }
-            textView.setText(text);
-            Log.d("De debug", text);
-        }
-    }
 }
